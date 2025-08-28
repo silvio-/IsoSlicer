@@ -17,7 +17,7 @@ To see the source codes, you go to View->Units (Ctrl+F12).
 
 When runnning, you need to make a few selections to get what Figure1.jpg shows:
 
-#1.Load a texture image: 
+*1.Load a texture image:*
 Select "Camera" Tab. Figure2.jpg shows the selected "Camera" tab. You can pick "Phong Shading with Texture". Then you load the texture from the "textures" directory (a bmp file). 
 
 
