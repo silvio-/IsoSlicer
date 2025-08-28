@@ -26,7 +26,11 @@ Figure1.jpg shows the options in the "NURBS" tab. In the "Slicing" area select "
 *3.Present the slicing samples over the rendered image:*   
 In the slicing area, press the button "Multiple NURBS-Multilayer" and select nn the "multiple_patches" directory the same file "UtahTeapot.txt".
 
-That's it! You can change several parameters to change the views, objects and textures. The trimming area is the pure black region in the texture file. You can show a single NURBS by pressing the button "Load a NURBS" (files in the "single-patch" directory inside dataset), and render it with the button "Single NURBS". Commas (',') are used to indicate decimal digits (ex: 0,234 is 0.234). You can see isocurves with their control points by using "Single Isocurve", "W/ Ctrl points", with the parametric value given in "isovalue" (it has to be confined in the parametric limits). You may choose the between "u-family" or "v-family" of isocurves. Depending on their shape being close to a plane of the type Z=h, one may produce better results than the other.
+That's it! You can watch a video showing these steps:
+https://drive.google.com/file/d/1kBLubybHPWZZzQWmrktu5UvKsmGgn4p9/view?userstoinvite=none
+
+You can change several parameters to change the views, objects and textures. The trimming area is the pure black region in the texture file. You can show a single NURBS by pressing the button "Load a NURBS" (files in the "single-patch" directory inside dataset), and render it with the button "Single NURBS". Commas (',') are used to indicate decimal digits (ex: 0,234 is 0.234). You can see isocurves with their control points by using "Single Isocurve", "W/ Ctrl points", with the parametric value given in "isovalue" (it has to be confined in the parametric limits). You may choose the between "u-family" or "v-family" of isocurves. Depending on their shape being close to a plane of the type Z=h, one may produce better results than the other.
+
 
 
 
