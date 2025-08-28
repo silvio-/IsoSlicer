@@ -10,16 +10,16 @@
 
 class snurbs{
 	public:
-	int n,m; //graus nas duas direções da NURBS
-	int Ku,Kv;  //números de nós sem multiplicidades, nas duas direções da NURBS
-	int Kur,Kvr; //números de nós com multiplicidades, nas duas direções da NURBS
-	int Lu,Lv; //quantidade de intervalos úteis (sem multiplicidades), nas duas direções da NURBS
-	int cu,cv; //números de pontos de controle (vale: k+1=n+c) nas duas direções da NURBS
-	Ponto **d; //pontos de controle em coords homogêneas da malha da NURBS
-	double *u,*v; //vetores de nós da NURBS
-	int *ru,*rv; // vetor de multiplicidade dos nós da NURBS
-	int *uix, *vix; //vetores de índices de nós, considerando as multiplicidades
-	int *uuteis,*vuteis; //vetores dos índices dos intervalos de domínio (úteis) em uix e vix
+	int n,m; //graus nas duas direÃ§Ãµes da NURBS
+	int Ku,Kv;  //nÃºmeros de nÃ³s sem multiplicidades, nas duas direÃ§Ãµes da NURBS
+	int Kur,Kvr; //nÃºmeros de nÃ³s com multiplicidades, nas duas direÃ§Ãµes da NURBS
+	int Lu,Lv; //quantidade de intervalos Ãºteis (sem multiplicidades), nas duas direÃ§Ãµes da NURBS
+	int cu,cv; //nÃºmeros de pontos de controle (vale: k+1=n+c) nas duas direÃ§Ãµes da NURBS
+	Ponto **d; //pontos de controle em coords homogÃªneas da malha da NURBS
+	double *u,*v; //vetores de nÃ³s da NURBS
+	int *ru,*rv; // vetor de multiplicidade dos nÃ³s da NURBS
+	int *uix, *vix; //vetores de Ã­ndices de nÃ³s, considerando as multiplicidades
+	int *uuteis,*vuteis; //vetores dos Ã­ndices dos intervalos de domÃ­nio (Ãºteis) em uix e vix
 
 	void inicialize(int grauu, int grauv, int ku, int kv, int kur, int kvr);
 	void defina_intervalos_uteis();
@@ -46,8 +46,8 @@ class triangulos{
 	int npts,mpts;
 	ponto **Pt;
 	vetor **pnormais;
-	vetor **t1normais;  //normais nos triângulos da carreira 1
-	vetor **t2normais;  //normais nos triângulos da carreira 2
+	vetor **t1normais;  //normais nos triÃ¢ngulos da carreira 1
+	vetor **t2normais;  //normais nos triÃ¢ngulos da carreira 2
 
 	void inicialize(int Npts, int Mpts);
 	void desaloque();
