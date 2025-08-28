@@ -207,7 +207,7 @@ void baricentrico::coordenadas_baricentricas(ponto P1, ponto P2, ponto P3,float 
 	float  area_total;
 	area_total =(P1.x - P3.x)*(P2.y - P3.y) - (P1.y - P3.y)*(P2.x - P3.x);
 	if (fabs(area_total)<TOL){
-		alfa=0; beta=0;  //triângulo degenerado-> coords inválidas
+		alfa=0; beta=0;  //triÃ¢ngulo degenerado-> coords invÃ¡lidas
 	}
 	else {
 	  alfa =((px - P3.x)*(P2.y - P3.y) - (py - P3.y)*(P2.x - P3.x))/area_total;
@@ -216,7 +216,7 @@ void baricentrico::coordenadas_baricentricas(ponto P1, ponto P2, ponto P3,float 
 }
 
 
-//------NEXKSB: próximo sub-conjunto de tamanho K de um conjunto de tamanho n
+//------NEXKSB: prÃ³ximo sub-conjunto de tamanho K de um conjunto de tamanho n
 
 void nexksb::prepare(int tam, int maxr, int **mark)
 {
@@ -349,7 +349,7 @@ void dmemo::desaloque()
 }
 
 
-//----------------Resolução de sistemas lineares n x n
+//----------------ResoluÃ§Ã£o de sistemas lineares n x n
 
 void SisLin::inicialize(int nn)
 {
@@ -393,9 +393,9 @@ void SisLin::zere_matriz()
 			A[i][j]=0.0;
 }
 
-// Eliminação gaussiana; se não houver solução única, ele retorna NULL.
-// Os termos independentes devem estar já na última coluna da matriz A
-//Ou seja, A[i][n] (já que começa de 0).
+// EliminaÃ§Ã£o gaussiana; se nÃ£o houver soluÃ§Ã£o Ãºnica, ele retorna NULL.
+// Os termos independentes devem estar jÃ¡ na Ãºltima coluna da matriz A
+//Ou seja, A[i][n] (jÃ¡ que comeÃ§a de 0).
 
 
 double *SisLin::egaussiana()
