@@ -1,11 +1,11 @@
 # IsoSlicer
 System to directly slice Trimmed-NURBS
 
-IsoSlicer is a custom-made software that takes a trimmed-Nurbs surface and produces sample points that represent the slicing curves in multiple layers as part of the 3D printing pipeline. The visualization in the software is based on the triangle scanline algorithm with Phong Illumination and shading, with z-buffer algorithm for visibility. The software was coded in C++ using the Embarcadero C++Builder IDE in the Windows 11 system. The C++Builder 12 Community Edition is free for academic purposes.
+IsoSlicer is a custom-made software that takes a trimmed-Nurbs surface and produces sample points that represent the slicing curves in multiple layers as part of the 3D printing pipeline. The visualization in the software is based on the triangle scanline algorithm with Phong Illumination and shading, with z-buffer algorithm for visibility. The software was coded in C++ using the Embarcadero C++Builder IDE in the Windows 11 system.
 Its URL is:
 https://www.embarcadero.com/products/cbuilder
 
-The Community Edition can be found at:
+ The C++Builder 12 Community Edition is free for academic purposes. It can be found at:
 https://www.embarcadero.com/products/cbuilder/starter
 You just need to fill out a small form and press the Download button. Then you follow the instructions that will appear.
 
