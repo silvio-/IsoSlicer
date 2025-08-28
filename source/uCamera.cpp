@@ -127,7 +127,7 @@ void Luz_objeto::carregue(vetor Iamb, vetor Iluz, vetor od, ponto Pluz, float ka
 {
 	Ia=Iamb;
 	Ip=Iluz;
-	It={50,50,180};//plano de interseção sendo transparente
+	It={50,50,180};//plano de interseÃ§Ã£o sendo transparente
 	Od={od.x/(float)255, od.y/(float)255, od.z/(float)255};
 	Pl=Pluz;
 	Ka=ks; Kd=kd; Ks=ks;
