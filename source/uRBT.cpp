@@ -150,7 +150,7 @@ void __fastcall TForm1::Button3Click(TObject *Sender)
 		Image1->Picture->Graphic = Bitmap;
 	}
 	else
-		Label7->Caption = "Carregar SuperfÌcie!";
+		Label7->Caption = "Carregar Superf√≠cie!";
 }
 //---------------------------------------------------------------------------
 
@@ -250,7 +250,7 @@ void verifique_colisao_plano_de_vista(camera cam,ponto *P1, ponto *P2, ponto *P3
 void __fastcall TForm1::Button21Click(TObject *Sender)
 {
 	if (!SNurbs_criada) {
-	  //	Form1->Label22->Caption="Erro de inicializaÁ„o.";
+	  //	Form1->Label22->Caption="Erro de inicializa√ß√£o.";
 		return;
 	}
 	Luz_objeto cena;
