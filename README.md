@@ -23,7 +23,7 @@ Select "Camera" Tab. Figure2.jpg shows the selected "Camera" tab. You can pick "
 *2.Render the Utah Teapot:*  
 Figure1.jpg shows the options in the "NURBS" tab. In the "Slicing" area select "zbuffer"  and "Trim"  and press the button "Multiple NURBS" in the "Rendering NURBS" area. In the "multiple_patches" directory (inside "dataset") select the file "UtahTeapot.txt".
 
-*3.Present the slicing samples over the rendered image:* 
+*3.Present the slicing samples over the rendered image:*   
 In the slicing area, press the button "Multiple NURBS-Multilayer" and select nn the "multiple_patches" directorythe same file "UtahTeapot.txt".
 
 That's it! You can change several parameters to change the views, objects and textures. The trimming area is the pure black region in the texture file. You can show a single NURBS by pressing the button "Load a NURBS" (files in the "single-patch" directory inside dataset), and render it with the button "Single NURBS". Commas (',') are used to indicate decimal digits (ex: 0,234 is 0.234). 
