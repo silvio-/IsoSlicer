@@ -1,0 +1,5 @@
+NURBS_Esfera_3-3_1x1A.txt
+NURBS_Esfera_3-3_1x1B.txt
+
+
+
