@@ -84,7 +84,7 @@ Ponto lerp(double t, Ponto A, Ponto B)
 	return(P);
 }
 
-//Aplica DeBoor de acordo com Farin 4a ediÁ„o
+//Aplica DeBoor de acordo com Farin 4a edi√ß√£o
 Ponto  cnurbs::deBoor(int I, int r_, double U)
 {
 	double t;
@@ -104,12 +104,12 @@ Ponto  cnurbs::deBoor(int I, int r_, double U)
 }
 
 
-//Aplica o Algoritmo de Oslo para fazer uma subdivis„o. A subdivis„o È
-//feita tomando-se a mÈdia dos limites inferior e superior de todo o
-//suporte ˙til.  A saÌda È o par de curvas resultante da subdivis„o.
-//Nota: O Alg. de Oslo È mais geral do que a subdivis„o em duas curvas:
-//para uma quantidade arbitr·ria de inserÁıes, ele gera a poligonal
-//correspondente ‡s inserÁıes, que gera a mesma curva original.
+//Aplica o Algoritmo de Oslo para fazer uma subdivis√£o. A subdivis√£o √©
+//feita tomando-se a m√©dia dos limites inferior e superior de todo o
+//suporte √∫til.  A sa√≠da √© o par de curvas resultante da subdivis√£o.
+//Nota: O Alg. de Oslo √© mais geral do que a subdivis√£o em duas curvas:
+//para uma quantidade arbitr√°ria de inser√ß√µes, ele gera a poligonal
+//correspondente √†s inser√ß√µes, que gera a mesma curva original.
 //Ainda com problemas.
 
 void find(int KN, double *TAU, double *T, int j, int *MU)
@@ -174,7 +174,7 @@ void iSUBDIV(Ponto *P, int k, double *TAU, double *T, int MU, int J, Ponto **TEM
 	{
 		for(int i=MU-k+1+r; i<=MU; i++)
 		{
-			T1=T[J+k-r] - TAU[i];     //TAU est· com i negativo para MU==0
+			T1=T[J+k-r] - TAU[i];     //TAU est√° com i negativo para MU==0
 			T2=TAU[i+k-r] - T[J+k-r];
 			t = T2/(T1 + T2);
 			TEMP[r+1][i] = lerp(t, TEMP[r][i], TEMP[r][i-1]);
@@ -202,7 +202,7 @@ void  cnurbs::oslo(cnurbs *esq, cnurbs *dir)
 		I=uix[uuteis[L-1]];
 		Ir=uuteis[L-1];
 	}
-	int num_ins=n;     //num_ins=n˙mero de inserÁıes
+	int num_ins=n;     //num_ins=n√∫mero de inser√ß√µes
 	if (fabs(U-u[I])<TOL) {
 		num_ins= n - r[I];
 		num_ins=(num_ins<0)?0:num_ins;
@@ -210,8 +210,8 @@ void  cnurbs::oslo(cnurbs *esq, cnurbs *dir)
 
 	if (num_ins>0) {
 
-	// A subdivis„o no meio requer n inserÁıes menos #repetiÁıes = num_ins
-	// n=K; ent„o: T tem tamanho N+K.
+	// A subdivis√£o no meio requer n inser√ß√µes menos #repeti√ß√µes = num_ins
+	// n=K; ent√£o: T tem tamanho N+K.
 	// Kr=K+N do artigo de Oslo
 		double *TAU, *T;
 		int MU;
@@ -231,7 +231,7 @@ void  cnurbs::oslo(cnurbs *esq, cnurbs *dir)
 
 		Ponto  *D = (Ponto *) calloc (c+num_ins, sizeof(Ponto));
 		Ponto *P = d;
-		Ponto **TEMP;  //Matriz tempor·ria de pontos para iSUBDIV
+		Ponto **TEMP;  //Matriz tempor√°ria de pontos para iSUBDIV
 /*		TEMP=(Ponto **)calloc(n+1,sizeof(Ponto *));
 		for(int i=0; i<n; i++)
 			TEMP[i]= (Ponto *)calloc(n+1,sizeof(Ponto));
@@ -258,7 +258,7 @@ fclose(fp);
 		delete(TEMP);   */
 
 
-		//K=num de nÛs sem repetiÁıes, membro do objeto cnurbs
+		//K=num de n√≥s sem repeti√ß√µes, membro do objeto cnurbs
 		if (num_ins<n)
 			esq->inicialize(n,K,Kr+num_ins);
 		else
@@ -280,7 +280,7 @@ fclose(fp);
 				esq->Ucarregue(i,u[i],r[i]);
 		}
 
-		esq->defina_intervalos_uteis();        //esq est· criando uma posiÁ„o a mais em u ainda
+		esq->defina_intervalos_uteis();        //esq est√° criando uma posi√ß√£o a mais em u ainda
 
 		delete(TAU);
 		delete(T);
@@ -291,8 +291,8 @@ fclose(fp);
 }
 
 
-//Aplica o Algoritmo de Oslo para fazer uma subdivis„o. Essa È
-//a vers„o otimizada do artigo: MAKING THE OSLO ALGORITHM MORE EFFICIENT
+//Aplica o Algoritmo de Oslo para fazer uma subdivis√£o. Essa √©
+//a vers√£o otimizada do artigo: MAKING THE OSLO ALGORITHM MORE EFFICIENT
 // de T. LYCHE AND K. MORKEN : SlAM J. NUMER. ANAL. Vo|. 23, No. 3, June 1986
 
 void  cnurbs::oslo2(cnurbs *esq, cnurbs *dir)
@@ -311,7 +311,7 @@ void  cnurbs::oslo2(cnurbs *esq, cnurbs *dir)
 		I=uix[uuteis[L-1]];
 		Ir=uuteis[L-1];
 	}
-	int num_ins = n;     //num_ins=n˙mero de inserÁıes
+	int num_ins = n;     //num_ins=n√∫mero de inser√ß√µes
 	if (fabs(U-u[I])<TOL) {
 		num_ins= n - r[I];
 		num_ins=(num_ins<0)?0:num_ins;
@@ -319,8 +319,8 @@ void  cnurbs::oslo2(cnurbs *esq, cnurbs *dir)
 
 	if (num_ins>0) {
 
-	// A subdivis„o no meio requer n inserÁıes menos #repetiÁıes = num_ins
-	// n=K; ent„o: T tem tamanho N+K.
+	// A subdivis√£o no meio requer n inser√ß√µes menos #repeti√ß√µes = num_ins
+	// n=K; ent√£o: T tem tamanho N+K.
 	// Kr=K+N do artigo de Oslo
 		double *TAU, *T, *Csi;
 		int MU;
@@ -351,7 +351,7 @@ void  cnurbs::oslo2(cnurbs *esq, cnurbs *dir)
 			D[j]=d[j-num_ins];
 
 
-		int i,ih,il,iu ,mul,n1=uix[uuteis[0]], n2=uix[uuteis[L-1]], k=num_ins+1, v, kv;  //I+1 porque no Oslo ixs comeÁam em 1
+		int i,ih,il,iu ,mul,n1=uix[uuteis[0]], n2=uix[uuteis[L-1]], k=num_ins+1, v, kv;  //I+1 porque no Oslo ixs come√ßam em 1
 		double tau2, d1, d2;
 		int j=Ir-n+3, pix=Ir-n+2*num_ins;
 FILE *fp;
@@ -366,7 +366,7 @@ fprintf(fp,"\nPara j=%d mul=%d Ch[%d]<=C[%d]=(%.4f,%.4f,%.4f)",j,mul,k+1,mul, C[
   /*5.*/for(int p=1; p<k; p++){
 fprintf(fp,"\n\nPerguntamos se T[%d]=%.4f == TAU[%d]=%.4f. Se sim: incremente ih=%d",j+p,T[j+p],ih,TAU[ih],ih);
 		/*1.*/if (fabs(T[j+p]-TAU[ih]) < TOL) ih++;//encontrou multiplicidade em TAU:
-			  else {                               //avance multiplicidades de T necess·rias via p
+			  else {                               //avance multiplicidades de T necess√°rias via p
 			  /*1.*/v++;
 			  /*2.*/kv = k - v + 1;
 			  /*3.*/if ((mul-v<n1)||(mul-v>n2)) Ch[kv].carregue(0,0,0,1);
@@ -375,9 +375,9 @@ fprintf(fp,"\n Ch[%d]<-C[%d]=(%.4f, %.4f, %.4f)", kv, mul - v, C[mul-v].x,C[mul-
 					Ch[kv] = C[mul-v];}
 			  /*4.*/tau2=(mul-v<=n2)?TAU[mul+kv-2+(n-num_ins)]:TAU[n2+k];
 			  /*5.*/il=max(mul-v,n1); iu=min(mul-1, n2+v);
-fprintf(fp,"\n p=%d v=%d i estar· entre max(%d,%d)= %d e min(%d,%d)=%d", p, v,mul-v,n1, max(mul-v,n1),mul-1, n2+v,  min(mul-1, n2+v));
+fprintf(fp,"\n p=%d v=%d i estar√° entre max(%d,%d)= %d e min(%d,%d)=%d", p, v,mul-v,n1, max(mul-v,n1),mul-1, n2+v,  min(mul-1, n2+v));
 fprintf(fp,"\n      tau2=%.4f=TAU[%d] <%do>=%.4f",tau2,(mul-v<=n2)?mul+kv-2+(n-num_ins):n2+k,(mul-v<=n2)?1:2,TAU[(mul-v<=n2)?mul+kv-2+(n-num_ins):n2+k]);
-			  /*6.*/for(i=il; i<=iu; i++){   //quantos lerps ser„o feitas: de il a iu
+			  /*6.*/for(i=il; i<=iu; i++){   //quantos lerps ser√£o feitas: de il a iu
 					/*1.*/kv++;
 					/*2.*/d1= U - TAU[i]; d2= tau2 - U;
 fprintf(fp,"\nCh[%d]=lerp({tau2=%.4f e TAU[%d]=%.4f},Ch[%d]=(%.4f,%.4f,%.4f),Ch[%d]=(%.4f,%.4f,%.4f))",kv,tau2,i,TAU[i],kv,Ch[kv].x,Ch[kv].y,Ch[kv].z,kv-1,Ch[kv-1].x,Ch[kv-1].y,Ch[kv-1].z);
@@ -393,7 +393,7 @@ fprintf(fp,"=>D[%d]=Ch[%d]=(%.4f,%.4f,%.4f)",pix,kv,Ch[kv].x,Ch[kv].y,Ch[kv].z);
 fclose(fp);
 
 
-		//K=num de nÛs sem repetiÁıes, membro do objeto cnurbs
+		//K=num de n√≥s sem repeti√ß√µes, membro do objeto cnurbs
 		int rep=0;
 		for(int i=0; i<=I; i++)
 			rep += r[i];
@@ -498,8 +498,8 @@ void cnurbs::desenhe_poli(camera Cam, Graphics::TBitmap *Bitmap, byte R, byte G,
 
 }
 
-//Gera uma nova curva NURBS com um dado nÛ ficando com multiplicidade m·xima
-//Obs: noh È Ìndice em Uuteis (nÛs de domÌnio), de comeÁo de intervalo
+//Gera uma nova curva NURBS com um dado n√≥ ficando com multiplicidade m√°xima
+//Obs: noh √© √≠ndice em Uuteis (n√≥s de dom√≠nio), de come√ßo de intervalo
 cnurbs cnurbs::gere_nurbs_com_multiplicidade_do_noh_completa(int noh)
 {
 	cnurbs novanurbs;
