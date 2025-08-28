@@ -63,10 +63,10 @@ public:
 float norma(baricentrico d);
 
 //classe criada para implementar o algoritmo NEXKSB do Nijenhuis-Wilf
-//NEXKSB=prÛximo subconjunto de tamanho k de um conjunto de tamanho n
-//a rotina next_k_subset deixa a m·scara mask com os elementos selecionados
-//com um "1" ao invÈs de "0" dos elementos n„o selecionados para fazer parte
-//do prÛximo  k-subsonjunto.
+//NEXKSB=pr√≥ximo subconjunto de tamanho k de um conjunto de tamanho n
+//a rotina next_k_subset deixa a m√°scara mask com os elementos selecionados
+//com um "1" ao inv√©s de "0" dos elementos n√£o selecionados para fazer parte
+//do pr√≥ximo  k-subsonjunto.
 class nexksb{
     int m,n,k,h,next;
     public:
@@ -95,7 +95,7 @@ class dmemo{
 };
 
 
-//- ResoluÁ„o de sistemas lineares n x n
+//- Resolu√ß√£o de sistemas lineares n x n
 
 class SisLin{
 	public:
