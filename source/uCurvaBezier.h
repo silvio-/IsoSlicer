@@ -10,8 +10,8 @@
 class cbezier {
 public:
 	int n; //grau da curva
-	Ponto *b; //pontos de controle em coords homogêneas
-	Ponto *_b; //pontos de controle auxiliares em coords homogêneas
+	Ponto *b; //pontos de controle em coords homogÃªneas
+	Ponto *_b; //pontos de controle auxiliares em coords homogÃªneas
 
 	void inicialize(int grau); // inicializa estruturas internas
     void destrua(); // desaloca estruturas internas
