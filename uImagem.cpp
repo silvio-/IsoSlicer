@@ -1,0 +1,229 @@
+//---------------------------------------------------------------------------
+
+#pragma hdrstop
+
+#include "uImagem.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+
+void paratela(ponto *P, Graphics::TBitmap *Bitmap)
+{
+	P->x = (P->x + 1)*Bitmap->Width/2 ;
+	P->y = (1 - P->y)*Bitmap->Height/2;
+}
+
+void desenhe_cubo_padrao(camera Cam, Graphics::TBitmap *Bitmap)
+{
+	 ponto P[8],Pv[8], Pp[8];
+
+	 Bitmap->Canvas->Brush->Color=(TColor) RGB (0xff, 0xff, 0xff);
+	 Bitmap->Canvas->Rectangle(0,0, Bitmap->Width,Bitmap->Height);
+	 Bitmap->Canvas->Pen->Width = 1;
+	 Bitmap->Canvas->Pen->Color= (TColor) RGB (0, 0, 0);
+//----plano z=0
+	 ponto P1, P2;
+	 float t;
+	 P[0].carregue(-5,-5,0);
+	 P[1].carregue(5,-5,0);
+	 P[2].carregue(-5,5,0);
+	 P[3].carregue(5,5,0);
+	 vetor w1,w2;
+	 vetor u1 = P[1].menos(P[0]);
+	 vetor v1 = P[3].menos(P[2]);
+	 vetor u2 = P[2].menos(P[0]);
+	 vetor v2 = P[3].menos(P[1]);
+	 for(int i=0; i<11; i++){
+		t=i/10.0;
+		w1 = u1.multiescalar(t);
+		w2 = v1.multiescalar(t);
+
+		P1.combine(P[0],w1);
+		P1=Cam.coordsvista(P1);
+		P1=Cam.perspectiva(P1);
+		paratela(&P1, Bitmap);
+
+		P2.combine(P[2],w2);
+		P2=Cam.coordsvista(P2);
+		P2=Cam.perspectiva(P2);
+		paratela(&P2, Bitmap);
+
+		Bitmap->Canvas->MoveTo((int)P2.x, (int)P2.y);
+		Bitmap->Canvas->LineTo((int)P1.x, (int)P1.y);
+
+		w1 = u2.multiescalar(t);
+		w2 = v2.multiescalar(t);
+
+		P1.combine(P[0],w1);
+		P1=Cam.coordsvista(P1);
+		P1=Cam.perspectiva(P1);
+		paratela(&P1, Bitmap);
+
+		P2.combine(P[1],w2);
+		P2=Cam.coordsvista(P2);
+		P2=Cam.perspectiva(P2);
+		paratela(&P2, Bitmap);
+
+		Bitmap->Canvas->MoveTo((int)P2.x, (int)P2.y);
+		Bitmap->Canvas->LineTo((int)P1.x, (int)P1.y);
+	 }
+
+
+	 P[0].carregue(0,0,0);
+	 P[1].carregue(1,0,0);
+	 P[2].carregue(1,1,0);
+	 P[3].carregue(0,1,0);
+	 P[4].carregue(0,1,1);
+	 P[5].carregue(0,0,1);
+	 P[6].carregue(1,0,1);
+	 P[7].carregue(1,1,1);
+
+	 for(int i=0; i<8; i++)
+		Pv[i]=Cam.coordsvista(P[i]);
+	 for(int i=0; i<8; i++) {
+		Pp[i]=Cam.perspectiva(Pv[i]);
+		paratela(&(Pp[i]), Bitmap);
+	 }
+
+     Bitmap->Canvas->Pen->Width = 2;
+	 Bitmap->Canvas->Pen->Color= (TColor) RGB (0, 100, 255);
+	 Bitmap->Canvas->MoveTo((int)Pp[0].x, (int)Pp[0].y);
+	 Bitmap->Canvas->LineTo((int)Pp[1].x, (int)Pp[1].y);
+	 Bitmap->Canvas->LineTo((int)Pp[2].x, (int)Pp[2].y);
+	 Bitmap->Canvas->LineTo((int)Pp[3].x, (int)Pp[3].y);
+	 Bitmap->Canvas->LineTo((int)Pp[0].x, (int)Pp[0].y);
+	 Bitmap->Canvas->LineTo((int)Pp[5].x, (int)Pp[5].y);
+	 Bitmap->Canvas->LineTo((int)Pp[6].x, (int)Pp[6].y);
+	 Bitmap->Canvas->LineTo((int)Pp[7].x, (int)Pp[7].y);
+	 Bitmap->Canvas->LineTo((int)Pp[4].x, (int)Pp[4].y);
+	 Bitmap->Canvas->LineTo((int)Pp[5].x, (int)Pp[5].y);
+	 Bitmap->Canvas->MoveTo((int)Pp[1].x, (int)Pp[1].y);
+	 Bitmap->Canvas->LineTo((int)Pp[6].x, (int)Pp[6].y);
+	 Bitmap->Canvas->MoveTo((int)Pp[2].x, (int)Pp[2].y);
+	 Bitmap->Canvas->LineTo((int)Pp[7].x, (int)Pp[7].y);
+	 Bitmap->Canvas->MoveTo((int)Pp[3].x, (int)Pp[3].y);
+	 Bitmap->Canvas->LineTo((int)Pp[4].x, (int)Pp[4].y);
+}
+
+void corrija_Pt_contra_plano_de_vista(camera Cam, ponto P1, ponto *P2)
+{
+	float t=(Cam.d-P1.z)/(P2->z-P1.z);
+	(*P2)={P1.x+t*(P2->x-P1.x),P1.y+t*(P2->y-P1.y), Cam.d};
+}
+
+void desenhe_planos_e_eixos(camera Cam, Graphics::TBitmap *Bitmap, bool limpar)
+{
+	 ponto P[4],Pv[4], Pp[4];
+
+	 if (limpar){
+		Bitmap->Canvas->Brush->Color=(TColor) RGB (0xff, 0xff, 0xff);
+		Bitmap->Canvas->Rectangle(0,0, Bitmap->Width,Bitmap->Height);
+	 }
+	 Bitmap->Canvas->Pen->Width = 1;
+	 Bitmap->Canvas->Pen->Color= (TColor) RGB (0, 100, 100);
+//----plano z=0
+	 ponto P1, P2;
+	 float t;
+	 P[0].carregue(-20,-20,0);
+	 P[1].carregue(20,-20,0);
+	 P[2].carregue(-20,20,0);
+	 P[3].carregue(20,20,0);
+	 vetor w1,w2;
+	 vetor u = P[1].menos(P[0]);
+	 vetor v = P[2].menos(P[0]);
+	 float tx;
+	 for(int i=0; i<41; i++){
+		t=i/40.0;
+		w1 = u.multiescalar(t);
+		w2 = v.multiescalar(t);
+
+		P1.combine(P[0],w1);
+		P1=Cam.coordsvista(P1);
+		P2.combine(P[2],w1);
+		P2=Cam.coordsvista(P2);
+
+		if ((P1.z>Cam.d)&&(P2.z<Cam.d))
+			corrija_Pt_contra_plano_de_vista(Cam, P1, &P2);
+		else if ((P1.z<Cam.d)&&(P2.z>Cam.d))
+			corrija_Pt_contra_plano_de_vista(Cam, P2, &P1);
+
+		if  ((P1.z>=Cam.d)&&(P2.z>=Cam.d)){
+			P1=Cam.perspectiva(P1);
+			paratela(&P1, Bitmap);
+
+			P2=Cam.perspectiva(P2);
+			paratela(&P2, Bitmap);
+
+			Bitmap->Canvas->MoveTo((int)P2.x, (int)P2.y);
+			Bitmap->Canvas->LineTo((int)P1.x, (int)P1.y);
+		}
+
+		P1.combine(P[0],w2);
+		P1=Cam.coordsvista(P1);
+		P2.combine(P[1],w2);
+		P2=Cam.coordsvista(P2);
+
+		if ((P1.z>Cam.d)&&(P2.z<Cam.d))
+			corrija_Pt_contra_plano_de_vista(Cam, P1, &P2);
+		else if ((P1.z<Cam.d)&&(P2.z>Cam.d))
+			corrija_Pt_contra_plano_de_vista(Cam, P2, &P1);
+
+		if  ((P1.z>=Cam.d)&&(P2.z>=Cam.d)){
+
+			P1=Cam.perspectiva(P1);
+			paratela(&P1, Bitmap);
+
+			P2=Cam.perspectiva(P2);
+			paratela(&P2, Bitmap);
+
+			Bitmap->Canvas->MoveTo((int)P2.x, (int)P2.y);
+			Bitmap->Canvas->LineTo((int)P1.x, (int)P1.y);
+		}
+	 }
+
+
+	 P[0].carregue(0,0,0);
+	 P[1].carregue(0,0,20);
+	 P[2].carregue(20,0,0);
+	 P[3].carregue(0,20,0);
+
+	 for(int i=0; i<4; i++)
+		Pv[i]=Cam.coordsvista(P[i]);
+
+	 Bitmap->Canvas->Pen->Width = 4;
+	 Bitmap->Canvas->Pen->Color= (TColor) RGB (0, 100, 255);
+	 if (Pv[0].z>Cam.d){
+		for(int i=1; i<4; i++)
+			if (Pv[i].z<Cam.d)
+				corrija_Pt_contra_plano_de_vista(Cam, Pv[0], &(Pv[i]));
+
+		for(int i=0; i<4; i++) {
+			Pp[i]=Cam.perspectiva(Pv[i]);
+			paratela(&(Pp[i]), Bitmap);
+		}
+		Bitmap->Canvas->MoveTo((int)Pp[0].x, (int)Pp[0].y);
+		Bitmap->Canvas->LineTo((int)Pp[1].x, (int)Pp[1].y);
+		Bitmap->Canvas->MoveTo((int)Pp[0].x, (int)Pp[0].y);
+		Bitmap->Canvas->LineTo((int)Pp[2].x, (int)Pp[2].y);
+		Bitmap->Canvas->MoveTo((int)Pp[0].x, (int)Pp[0].y);
+		Bitmap->Canvas->LineTo((int)Pp[3].x, (int)Pp[3].y);
+
+	 }
+	 else
+		if (Pv[0].z<Cam.d){
+			ponto Pv0;
+			for(int i=1; i<4; i++)
+				if (Pv[i].z>Cam.d){
+					Pv0=Pv[0];
+					corrija_Pt_contra_plano_de_vista(Cam, Pv[i], &(Pv0));
+					Pv0=Cam.perspectiva(Pv0);
+					paratela(&(Pv0), Bitmap);
+					Pp[i]=Cam.perspectiva(Pv[i]);
+					paratela(&(Pp[i]), Bitmap);
+					Bitmap->Canvas->MoveTo((int)Pv0.x, (int)Pv0.y);
+					Bitmap->Canvas->LineTo((int)Pp[1].x, (int)Pp[1].y);
+				}
+		}
+
+
+}
+
