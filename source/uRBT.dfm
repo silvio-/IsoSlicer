@@ -278,7 +278,7 @@ object Form1: TForm1
         Width = 50
         Height = 22
         TabOrder = 10
-        Text = '0,5'
+        Text = '0.5'
       end
       object Edit12: TEdit
         Left = 247
@@ -286,7 +286,7 @@ object Form1: TForm1
         Width = 50
         Height = 22
         TabOrder = 11
-        Text = '0,32'
+        Text = '0.32'
       end
       object Button1: TButton
         Left = 73
@@ -399,7 +399,7 @@ object Form1: TForm1
         Width = 50
         Height = 22
         TabOrder = 25
-        Text = '0,5'
+        Text = '0.5'
       end
       object Edit50: TEdit
         Left = 195
@@ -407,7 +407,7 @@ object Form1: TForm1
         Width = 50
         Height = 22
         TabOrder = 26
-        Text = '0,5'
+        Text = '0.5'
       end
       object Edit51: TEdit
         Left = 247
@@ -415,7 +415,7 @@ object Form1: TForm1
         Width = 50
         Height = 22
         TabOrder = 27
-        Text = '0,3'
+        Text = '0.3'
       end
       object RadioGroup3: TRadioGroup
         Left = 73
@@ -801,7 +801,7 @@ object Form1: TForm1
           Height = 22
           Alignment = taRightJustify
           TabOrder = 0
-          Text = '1,0'
+          Text = '1.0'
         end
         object Button8: TButton
           Left = 6
@@ -819,7 +819,7 @@ object Form1: TForm1
           Height = 22
           Alignment = taRightJustify
           TabOrder = 2
-          Text = '0,01'
+          Text = '0.01'
         end
         object CheckBox3: TCheckBox
           Left = 181
@@ -836,7 +836,7 @@ object Form1: TForm1
           Height = 22
           Alignment = taRightJustify
           TabOrder = 4
-          Text = '0,25'
+          Text = '0.25'
         end
         object Edit55: TEdit
           Left = 103
@@ -844,7 +844,7 @@ object Form1: TForm1
           Width = 39
           Height = 22
           TabOrder = 5
-          Text = '0,1'
+          Text = '0.1'
         end
         object Edit56: TEdit
           Left = 120
@@ -862,7 +862,7 @@ object Form1: TForm1
           Height = 22
           Alignment = taRightJustify
           TabOrder = 7
-          Text = '0,00'
+          Text = '0.00'
         end
         object Button24: TButton
           Left = 6
