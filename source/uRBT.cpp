@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 
 #include <vcl.h>
 #pragma hdrstop
@@ -11,6 +11,8 @@
 #include "uCurvaNurbs.h"
 #include "uSupNurbs.h"
 #include "uSupNurbs.cpp"
+#include <SysUtils.hpp>
+
 #define TOL 0.001
 #define PRECTOL 0.00001
 
@@ -26,27 +28,38 @@ bool Txtcriada=false;
 //camera cam(1250, 800);
 camera cam(1000, 640);
 
+double getFloat(AnsiString fstr)
+{
+	TFormatSettings fmt = TFormatSettings::Create();
+	if (AnsiPos(".",fstr)) {
+		fmt.DecimalSeparator = _D('.'); // Set custom decimal separator
+	}
+	else if (AnsiPos(",",fstr)) {
+		fmt.DecimalSeparator = _D(','); // Set custom decimal separator
+	}
+	return(StrToFloat(fstr,fmt));
+}
+
 
 void pegacamera()
 {
 	vetor Up;
 	ponto C,Mira;
 
-	C.x=StrToFloat(Form1->Edit1->Text);
-	C.y=StrToFloat(Form1->Edit2->Text);
-	C.z=StrToFloat(Form1->Edit3->Text);
+	C.x=getFloat(Form1->Edit1->Text);
+	C.y=getFloat(Form1->Edit2->Text);
+	C.z=getFloat(Form1->Edit3->Text);
 
-	Mira.x=StrToFloat(Form1->Edit4->Text);
-	Mira.y=StrToFloat(Form1->Edit5->Text);
-	Mira.z=StrToFloat(Form1->Edit6->Text);
+	Mira.x=getFloat(Form1->Edit4->Text);
+	Mira.y=getFloat(Form1->Edit5->Text);
+	Mira.z=getFloat(Form1->Edit6->Text);
 
-	Up.x=StrToFloat(Form1->Edit7->Text);
-	Up.y=StrToFloat(Form1->Edit8->Text);
-	Up.z=StrToFloat(Form1->Edit9->Text);
+	Up.x=getFloat(Form1->Edit7->Text);
+	Up.y=getFloat(Form1->Edit8->Text);
+	Up.z=getFloat(Form1->Edit9->Text);
 
-	cam.atualize(C,Mira, Up, StrToFloat(Form1->Edit10->Text),StrToFloat(Form1->Edit11->Text),
-						   StrToFloat(Form1->Edit12->Text));
-
+	cam.atualize(C,Mira, Up, getFloat(Form1->Edit10->Text),
+		getFloat(Form1->Edit11->Text),getFloat(Form1->Edit12->Text));
 
 }
 
@@ -61,7 +74,8 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 	Bitmap->Canvas->Brush->Color=(TColor) RGB (0xff, 0xff, 0xff);
 	Bitmap->Canvas->Rectangle(0,0, Bitmap->Width,Bitmap->Height);
 	Form1->Image1->Picture->Graphic = Bitmap; // assign the bitmap to the image control
-	pegacamera();
+	setlocale(LC_ALL, "en_US");
+  //	pegacamera();
 }
 
 //---------------------------------------------------------------------------
@@ -158,7 +172,7 @@ void __fastcall TForm1::Button3Click(TObject *Sender)
 void __fastcall TForm1::Button4Click(TObject *Sender)
 {
 	if (SNurbs_criada) {
-		float val = StrToFloat(Form1->Edit13->Text);
+		float val = getFloat(Form1->Edit13->Text);
 		pegacamera();
 		Nurbs.desenhe_1_isoparametrica(cam, Bitmap, Form1->CheckBox1->Checked, Form1->RadioGroup1->ItemIndex, val, 0.01, 255,0,255);
 		Form1->Image1->Picture->Graphic = Bitmap;
@@ -196,8 +210,8 @@ void __fastcall TForm1::Button8Click(TObject *Sender)
 	if (SNurbs_criada) {
 		pegacamera();
 		int npts;
-		Nurbs.desenhe_intersecoes_com_plano(&npts, StrToFloat(Form1->Edit14->Text),
-				Form1->RadioGroup1->ItemIndex,StrToFloat(Form1->Edit15->Text),
+		Nurbs.desenhe_intersecoes_com_plano(&npts, getFloat(Form1->Edit14->Text),
+				Form1->RadioGroup1->ItemIndex,getFloat(Form1->Edit15->Text),
 				Form1->CheckBox3->Checked,cam, Bitmap, 255, 255, 0);
 		Image1->Picture->Graphic = Bitmap;
 
@@ -277,13 +291,13 @@ void __fastcall TForm1::Button21Click(TObject *Sender)
 	Od.y=StrToInt(Form1->Edit44->Text);
 	Od.z=StrToInt(Form1->Edit45->Text);
 
-	Pluz.x=StrToFloat(Form1->Edit40->Text);
-	Pluz.y=StrToFloat(Form1->Edit41->Text);
-	Pluz.z=StrToFloat(Form1->Edit42->Text);
+	Pluz.x=getFloat(Form1->Edit40->Text);
+	Pluz.y=getFloat(Form1->Edit41->Text);
+	Pluz.z=getFloat(Form1->Edit42->Text);
 
-	ka=StrToFloat(Form1->Edit49->Text);
-	kd=StrToFloat(Form1->Edit50->Text);
-	ks=StrToFloat(Form1->Edit51->Text);
+	ka=getFloat(Form1->Edit49->Text);
+	kd=getFloat(Form1->Edit50->Text);
+	ks=getFloat(Form1->Edit51->Text);
 
 	cam.inicialize_zbuffer();
 
@@ -333,7 +347,7 @@ void __fastcall TForm1::Button21Click(TObject *Sender)
 	Nurbs.pinte(cena, cam, Form1->RadioGroup3->ItemIndex==1,Form1->CheckBox7->Checked, 1/(float)(StrToInt(Form1->Edit52->Text)), Bitmap,Textura);
 
 	if (Form1->CheckBox2->Checked){
-		float Zh= StrToFloat(Form1->Edit14->Text);
+		float Zh= getFloat(Form1->Edit14->Text);
 		ponto P1={-20,20,Zh}, P2={-20,-20,Zh}, P3={20,-20,Zh};
 		vetor N1={0,0,1}, N2={0,0,1}, N3={0,0,1}, N={0,0,1};
 		N1=cam.coordsvista(N1);
@@ -501,7 +515,7 @@ void __fastcall TForm1::Button24Click(TObject *Sender)
 				if (z>zmax) zmax = z;
 				if (z<zmin) zmin = z;
 			}
-		double h=zmin, deltah=StrToFloat(Form1->Edit54->Text);
+		double h=zmin, deltah=getFloat(Form1->Edit54->Text);
 		int npts=0;
 		double Tempo=0.0,minH=100000,maxH=(-100000);
 		double tempo=0.0;
@@ -509,7 +523,7 @@ void __fastcall TForm1::Button24Click(TObject *Sender)
 		while (h<=zmax){
 			int nump=0;
 			tempo = Nurbs.desenhe_intersecoes_com_plano(&nump, h,Form1->RadioGroup1->ItemIndex,
-				StrToFloat(Form1->Edit15->Text),Form1->CheckBox3->Checked,cam,
+				getFloat(Form1->Edit15->Text),Form1->CheckBox3->Checked,cam,
 				Bitmap, 255, 255, 0);
 			npts += nump;
 			if (nump>0) {
@@ -600,12 +614,12 @@ void __fastcall TForm1::Button25Click(TObject *Sender)
 					if (z>zmax) zmax = z;
 					if (z<zmin) zmin = z;
 				}
-			double h=zmin, deltah=StrToFloat(Form1->Edit54->Text);
+			double h=zmin, deltah=getFloat(Form1->Edit54->Text);
 			double tempo=0.0;
 			while (h<=zmax){
 				int numpt=0;
 				tempo = Nurbs.desenhe_intersecoes_com_plano(&numpt, h,Form1->RadioGroup1->ItemIndex,
-					StrToFloat(Form1->Edit15->Text),Form1->CheckBox3->Checked,cam,
+					getFloat(Form1->Edit15->Text),Form1->CheckBox3->Checked,cam,
 					Bitmap, 255, 255, 0);
 				npts += numpt;
 				if (numpt>0) {
@@ -676,13 +690,13 @@ void __fastcall TForm1::Button26Click(TObject *Sender)
 		Od.y=StrToInt(Form1->Edit44->Text);
 		Od.z=StrToInt(Form1->Edit45->Text);
 
-		Pluz.x=StrToFloat(Form1->Edit40->Text);
-		Pluz.y=StrToFloat(Form1->Edit41->Text);
-		Pluz.z=StrToFloat(Form1->Edit42->Text);
+		Pluz.x=getFloat(Form1->Edit40->Text);
+		Pluz.y=getFloat(Form1->Edit41->Text);
+		Pluz.z=getFloat(Form1->Edit42->Text);
 
-		ka=StrToFloat(Form1->Edit49->Text);
-		kd=StrToFloat(Form1->Edit50->Text);
-		ks=StrToFloat(Form1->Edit51->Text);
+		ka=getFloat(Form1->Edit49->Text);
+		kd=getFloat(Form1->Edit50->Text);
+		ks=getFloat(Form1->Edit51->Text);
 
 		cam.inicialize_zbuffer();
 
@@ -767,7 +781,7 @@ void __fastcall TForm1::Button26Click(TObject *Sender)
 			Nurbs.pinte(cena, cam, Form1->RadioGroup3->ItemIndex==1, Form1->CheckBox7->Checked, 1/(float)(StrToInt(Form1->Edit52->Text)), Bitmap,Textura);
 
 			if (Form1->CheckBox2->Checked){
-				float Zh= StrToFloat(Form1->Edit14->Text);
+				float Zh= getFloat(Form1->Edit14->Text);
 				ponto P1={-20,20,Zh}, P2={-20,-20,Zh}, P3={20,-20,Zh};
 				vetor N1={0,0,1}, N2={0,0,1}, N3={0,0,1}, N={0,0,1};
 				N1=cam.coordsvista(N1);

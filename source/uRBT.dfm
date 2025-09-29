@@ -50,7 +50,7 @@ object Form1: TForm1
   object Label15: TLabel
     Left = 4
     Top = 635
-    Width = 18
+    Width = 4
     Height = 16
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clRed
@@ -64,7 +64,7 @@ object Form1: TForm1
     Top = 8
     Width = 336
     Height = 593
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -12
@@ -193,7 +193,7 @@ object Form1: TForm1
         ParentFont = False
       end
       object Edit1: TEdit
-        Left = 143
+        Left = 145
         Top = 16
         Width = 50
         Height = 22
@@ -203,7 +203,7 @@ object Form1: TForm1
       object Edit2: TEdit
         Left = 195
         Top = 16
-        Width = 50
+        Width = 52
         Height = 22
         TabOrder = 1
         Text = '20'
@@ -217,23 +217,23 @@ object Form1: TForm1
         Text = '20'
       end
       object Edit4: TEdit
-        Left = 144
-        Top = 37
+        Left = 145
+        Top = 38
         Width = 50
         Height = 22
         TabOrder = 3
         Text = '0'
       end
       object Edit5: TEdit
-        Left = 194
-        Top = 37
+        Left = 196
+        Top = 38
         Width = 50
         Height = 22
         TabOrder = 4
         Text = '1'
       end
       object Edit6: TEdit
-        Left = 246
+        Left = 247
         Top = 38
         Width = 50
         Height = 22
@@ -241,15 +241,15 @@ object Form1: TForm1
         Text = '5'
       end
       object Edit7: TEdit
-        Left = 144
-        Top = 58
+        Left = 145
+        Top = 60
         Width = 50
         Height = 22
         TabOrder = 6
         Text = '0'
       end
       object Edit8: TEdit
-        Left = 195
+        Left = 196
         Top = 58
         Width = 50
         Height = 22
@@ -265,7 +265,7 @@ object Form1: TForm1
         Text = '1'
       end
       object Edit10: TEdit
-        Left = 143
+        Left = 145
         Top = 81
         Width = 50
         Height = 22
@@ -273,12 +273,12 @@ object Form1: TForm1
         Text = '1'
       end
       object Edit11: TEdit
-        Left = 195
-        Top = 82
+        Left = 196
+        Top = 81
         Width = 50
         Height = 22
         TabOrder = 10
-        Text = '0,5'
+        Text = '0.5'
       end
       object Edit12: TEdit
         Left = 247
@@ -286,12 +286,12 @@ object Form1: TForm1
         Width = 50
         Height = 22
         TabOrder = 11
-        Text = '0,32'
+        Text = '0.32'
       end
       object Button1: TButton
         Left = 73
         Top = 392
-        Width = 172
+        Width = 208
         Height = 25
         Caption = 'Load Texture (.BMP)'
         TabOrder = 12
@@ -399,7 +399,7 @@ object Form1: TForm1
         Width = 50
         Height = 22
         TabOrder = 25
-        Text = '0,5'
+        Text = '0.5'
       end
       object Edit50: TEdit
         Left = 195
@@ -407,7 +407,7 @@ object Form1: TForm1
         Width = 50
         Height = 22
         TabOrder = 26
-        Text = '0,5'
+        Text = '0.5'
       end
       object Edit51: TEdit
         Left = 247
@@ -415,7 +415,7 @@ object Form1: TForm1
         Width = 50
         Height = 22
         TabOrder = 27
-        Text = '0,3'
+        Text = '0.3'
       end
       object RadioGroup3: TRadioGroup
         Left = 73
@@ -657,7 +657,7 @@ object Form1: TForm1
         OnClick = Button7Click
       end
       object Panel2: TPanel
-        Left = 0
+        Left = 1
         Top = 299
         Width = 324
         Height = 315
@@ -801,7 +801,7 @@ object Form1: TForm1
           Height = 22
           Alignment = taRightJustify
           TabOrder = 0
-          Text = '1,0'
+          Text = '1.0'
         end
         object Button8: TButton
           Left = 6
@@ -819,7 +819,7 @@ object Form1: TForm1
           Height = 22
           Alignment = taRightJustify
           TabOrder = 2
-          Text = '0,01'
+          Text = '0.01'
         end
         object CheckBox3: TCheckBox
           Left = 181
@@ -836,7 +836,7 @@ object Form1: TForm1
           Height = 22
           Alignment = taRightJustify
           TabOrder = 4
-          Text = '0,25'
+          Text = '0.25'
         end
         object Edit55: TEdit
           Left = 103
@@ -844,7 +844,7 @@ object Form1: TForm1
           Width = 39
           Height = 22
           TabOrder = 5
-          Text = '0,1'
+          Text = '0.1'
         end
         object Edit56: TEdit
           Left = 120
@@ -862,7 +862,7 @@ object Form1: TForm1
           Height = 22
           Alignment = taRightJustify
           TabOrder = 7
-          Text = '0,00'
+          Text = '0.00'
         end
         object Button24: TButton
           Left = 6
