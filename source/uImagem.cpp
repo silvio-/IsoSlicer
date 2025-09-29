@@ -115,7 +115,7 @@ void desenhe_planos_e_eixos(camera Cam, Graphics::TBitmap *Bitmap, bool limpar)
 	 ponto P[4],Pv[4], Pp[4];
 
 	 if (limpar){
-		Bitmap->Canvas->Brush->Color=(TColor) RGB (0xff, 0xff, 0xff);
+		Bitmap->Canvas->Brush->Color=(TColor) RGB (0, 0, 0);
 		Bitmap->Canvas->Rectangle(0,0, Bitmap->Width,Bitmap->Height);
 	 }
 	 Bitmap->Canvas->Pen->Width = 1;

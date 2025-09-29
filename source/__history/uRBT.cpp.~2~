@@ -1,0 +1,900 @@
+﻿//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+#include <chrono>
+#include <string>
+#include <stdio.h>
+#include "uRBT.h"
+#include "uMat.h"
+#include "uImagem.h"
+#include "uCurvaNurbs.h"
+#include "uSupNurbs.h"
+#include "uSupNurbs.cpp"
+#include <SysUtils.hpp>
+
+#define TOL 0.001
+#define PRECTOL 0.00001
+
+
+
+
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+TForm1 *Form1;
+Graphics::TBitmap *Bitmap, *Textura;
+bool Txtcriada=false;
+//camera cam(1250, 800);
+camera cam(1000, 640);
+
+double getFloat(AnsiString fstr)
+{
+	TFormatSettings fmt = TFormatSettings::Create();
+	if (AnsiPos(".",fstr)) {
+		fmt.DecimalSeparator = _D('.'); // Set custom decimal separator
+	}
+	else if (AnsiPos(",",fstr)) {
+		fmt.DecimalSeparator = _D(','); // Set custom decimal separator
+	}
+	return(StrToFloat(fstr,fmt));
+}
+
+
+void pegacamera()
+{
+	vetor Up;
+	ponto C,Mira;
+
+	C.x=getFloat(Form1->Edit1->Text);
+	C.y=getFloat(Form1->Edit2->Text);
+	C.z=getFloat(Form1->Edit3->Text);
+
+	Mira.x=getFloat(Form1->Edit4->Text);
+	Mira.y=getFloat(Form1->Edit5->Text);
+	Mira.z=getFloat(Form1->Edit6->Text);
+
+	Up.x=getFloat(Form1->Edit7->Text);
+	Up.y=getFloat(Form1->Edit8->Text);
+	Up.z=getFloat(Form1->Edit9->Text);
+
+	cam.atualize(C,Mira, Up, getFloat(Form1->Edit10->Text),
+		getFloat(Form1->Edit11->Text),getFloat(Form1->Edit12->Text));
+
+}
+
+//---------------------------------------------------------------------------
+__fastcall TForm1::TForm1(TComponent* Owner)
+	: TForm(Owner)
+{
+	Bitmap = new Graphics::TBitmap();
+	// create the bitmap object
+	Bitmap->Width =  1000;//Form1->Image1->Width; // assign the initial width...
+	Bitmap->Height = 640;//Form1->Image1->Height; // ...and the initial height
+	Bitmap->Canvas->Brush->Color=(TColor) RGB (0xff, 0xff, 0xff);
+	Bitmap->Canvas->Rectangle(0,0, Bitmap->Width,Bitmap->Height);
+	Form1->Image1->Picture->Graphic = Bitmap; // assign the bitmap to the image control
+	setlocale(LC_ALL, "en_US");
+  //	pegacamera();
+}
+
+//---------------------------------------------------------------------------
+FILE *fp;
+snurbs Nurbs;
+bool SNurbs_criada=False;
+
+//TriangBez TBz(1);
+int grau=(-1);
+Ponto bu(0.0,0.0,0.0,1.0);
+double wu=1.0;
+baricentrico *d=NULL,u;
+int r=0;
+//derivadas_racionais dvr;
+//triangulacao Triang;
+//bool Triang_criada=false;
+
+ //---------------------------------------------------------------------------
+void __fastcall TForm1::Button1Click(TObject *Sender)
+{
+//	Form1->Edit12->Text=FloatToStrF(w.z,ffFixed, 3,2);
+
+	if (!Txtcriada) {
+		Textura = new Graphics::TBitmap();
+		Txtcriada=true;
+	}
+
+	OpenDialog1->Execute();
+	Textura->LoadFromFile(OpenDialog1->FileName);
+	Label58->Caption = OpenDialog1->FileName;
+	Form1->Image1->Picture->Graphic = Textura;
+
+}
+void __fastcall TForm1::Button2Click(TObject *Sender)
+{
+	int i,j;
+	float x, y, z, w;
+	int  grauu,  grauv,  ku,  kv,  kur,  kvr;
+
+	OpenDialog1->Execute();
+
+	if(fp=fopen(AnsiString(OpenDialog1->FileName).c_str(), "r"))
+	{
+		if (SNurbs_criada)
+			Nurbs.destrua();
+		fscanf(fp,"%d %d %d %d %d %d", &grauu,  &grauv,  &ku,  &kv,  &kur,  &kvr);
+		Nurbs.inicialize( grauu,  grauv,  ku,  kv,  kur,  kvr);
+
+		float u,v;
+		int r;
+		Ponto P;
+		for(int i=0; i<ku; i++){
+			fscanf(fp,"%f %d", &u, &r);
+			Nurbs.Ucarregue(i, u, r);
+		}
+		for(int i=0; i<kv; i++){
+			fscanf(fp,"%f %d", &v, &r);
+			Nurbs.Vcarregue(i, v, r);
+		}
+		for(int i=0; i<Nurbs.cu; i++)
+			for(int j=0; j<Nurbs.cv; j++){
+				fscanf(fp,"%lf %lf %lf %lf", &(P.x), &(P.y), &(P.z), &(P.w));
+				P.x *= P.w; P.y *= P.w; P.z *= P.w;
+				Nurbs.Pcarregue(i, j, P);
+			}
+		Nurbs.defina_intervalos_uteis();
+		fclose(fp);
+		double minZ, maxZ;
+
+		Nurbs.encontre_min_max_Z_malha(&minZ, &maxZ);
+		Label3->Caption = "MinZ=" + FloatToStrF(minZ,ffFixed, 3,2);
+		Label4->Caption = "MaxZ=" + FloatToStrF(maxZ,ffFixed, 3,2);
+		SNurbs_criada=true;
+
+		Label7->Caption = OpenDialog1->FileName;
+	}
+
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button3Click(TObject *Sender)
+{
+	if (SNurbs_criada) {
+		Nurbs.desenhemalha(cam, Bitmap, 255, 128, 0);
+		Image1->Picture->Graphic = Bitmap;
+	}
+	else
+		Label7->Caption = "Carregar Superfície!";
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TForm1::Button4Click(TObject *Sender)
+{
+	if (SNurbs_criada) {
+		float val = getFloat(Form1->Edit13->Text);
+		pegacamera();
+		Nurbs.desenhe_1_isoparametrica(cam, Bitmap, Form1->CheckBox1->Checked, Form1->RadioGroup1->ItemIndex, val, 0.01, 255,0,255);
+		Form1->Image1->Picture->Graphic = Bitmap;
+
+
+	}
+
+}
+//---------------------------------------------------------------------------+-+-+_++++++++++++
+
+
+
+void __fastcall TForm1::Button5Click(TObject *Sender)
+{
+
+	if (SNurbs_criada) {
+		Nurbs.desenheisoparametricas(cam, Bitmap, 0.1, 10, 180, 20);
+		Form1->Image1->Picture->Graphic = Bitmap; // assign the bitmap to the image control
+	}
+
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button7Click(TObject *Sender)
+{
+	pegacamera();
+	desenhe_planos_e_eixos(cam, Bitmap, true);
+	Image1->Picture->Graphic = Bitmap;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button8Click(TObject *Sender)
+{
+	if (SNurbs_criada) {
+		pegacamera();
+		int npts;
+		Nurbs.desenhe_intersecoes_com_plano(&npts, getFloat(Form1->Edit14->Text),
+				Form1->RadioGroup1->ItemIndex,getFloat(Form1->Edit15->Text),
+				Form1->CheckBox3->Checked,cam, Bitmap, 255, 255, 0);
+		Image1->Picture->Graphic = Bitmap;
+
+	}
+}
+//---------------------------------------------------------------------------
+
+
+void verifique_colisao_plano_de_vista(camera cam,ponto *P1, ponto *P2, ponto *P3, ponto *P, bool *quebra)
+{
+	bool caso1=(P1->z<cam.d),caso2=(P2->z<cam.d),caso3 =(P3->z<cam.d);
+	if (caso1 && caso2 && !caso3) {
+		corrija_Pt_contra_plano_de_vista(cam, *P3, P1);
+		corrija_Pt_contra_plano_de_vista(cam, *P3, P2);
+		*quebra=false;
+	}
+	else if (caso1 && !caso2 && caso3) {
+		corrija_Pt_contra_plano_de_vista(cam, *P2, P1);
+		corrija_Pt_contra_plano_de_vista(cam, *P2, P3);
+		*quebra=false;
+	}
+	else if (!caso1 && caso2 && caso3) {
+		corrija_Pt_contra_plano_de_vista(cam, *P1, P2);
+		corrija_Pt_contra_plano_de_vista(cam, *P1, P3);
+		*quebra=false;
+	}
+	else if (caso1 && !caso2 && !caso3) {
+		(*P)=(*P1);
+		corrija_Pt_contra_plano_de_vista(cam, *P2, P1);
+		corrija_Pt_contra_plano_de_vista(cam, *P3, P);
+		*quebra=true;
+	}
+	else if (!caso1 && caso2 && !caso3) {
+		(*P)=(*P2);
+		corrija_Pt_contra_plano_de_vista(cam, *P1, P);
+		corrija_Pt_contra_plano_de_vista(cam, *P3, P2);
+		*quebra=true;
+	}
+	else if (!caso1 && !caso2 && caso3) {
+		(*P)=(*P3);
+		corrija_Pt_contra_plano_de_vista(cam, *P1, P);
+		corrija_Pt_contra_plano_de_vista(cam, *P2, P3);
+		*quebra=true;
+	}
+	else  *quebra=true;
+}
+
+
+
+void __fastcall TForm1::Button21Click(TObject *Sender)
+{
+	if (!SNurbs_criada) {
+	  //	Form1->Label22->Caption="Erro de inicialização.";
+		return;
+	}
+	Luz_objeto cena;
+	vetor  Iamb, Iluz, Od;
+	ponto Pluz;
+	float  ka,  kd,  ks;
+
+	if(!Form1->CheckBox4->Checked){
+		Bitmap->Canvas->Brush->Color=(TColor) RGB (0xff, 0xff, 0xff);
+		Bitmap->Canvas->Rectangle(0,0, Bitmap->Width,Bitmap->Height);
+	}
+
+	pegacamera();
+
+	Iamb.x=StrToInt(Form1->Edit46->Text);
+	Iamb.y=StrToInt(Form1->Edit47->Text);
+	Iamb.z=StrToInt(Form1->Edit48->Text);
+
+	Iluz.x=StrToInt(Form1->Edit37->Text);
+	Iluz.y=StrToInt(Form1->Edit38->Text);
+	Iluz.z=StrToInt(Form1->Edit39->Text);
+
+	Od.x=StrToInt(Form1->Edit43->Text);
+	Od.y=StrToInt(Form1->Edit44->Text);
+	Od.z=StrToInt(Form1->Edit45->Text);
+
+	Pluz.x=getFloat(Form1->Edit40->Text);
+	Pluz.y=getFloat(Form1->Edit41->Text);
+	Pluz.z=getFloat(Form1->Edit42->Text);
+
+	ka=getFloat(Form1->Edit49->Text);
+	kd=getFloat(Form1->Edit50->Text);
+	ks=getFloat(Form1->Edit51->Text);
+
+	cam.inicialize_zbuffer();
+
+	vetor Odp={175,175,175};
+	cena.carregue(Iamb, Iluz, Odp, cam.coordsvista(Pluz), ka, kd, ks);
+	if(!Form1->CheckBox8->Checked){
+		ponto P1={-20,20,0}, P2={-20,-20,0}, P3={20,-20,0};
+		vetor N1={0,0,1}, N2={0,0,1}, N3={0,0,1}, N={0,0,1};
+		P1= cam.coordsvista(P1);
+		P2= cam.coordsvista(P2);
+		P3= cam.coordsvista(P3);
+		N1=cam.coordsvista(N1);
+		N2=cam.coordsvista(N2);
+		N3=cam.coordsvista(N3);
+		N=cam.coordsvista(N);
+		N1.normalize();
+		N2.normalize();
+		N3.normalize();
+		N.normalize();
+		if ((P1.z<cam.d)||(P2.z<cam.d) ||(P3.z<cam.d)) {
+			ponto P;  bool quebra;
+			verifique_colisao_plano_de_vista(cam,&P1, &P2, &P3, &P, &quebra);
+			if (quebra)
+				cena.varredura(cam, 0,0,0,0,0,0,1,1, P, P3, P1, N2, N3, N1, N, 0, false, false, Bitmap, Textura);
+		}
+
+		cena.varredura(cam, 0,0,0,0,0,0,1,1, P1, P2, P3, N1, N2, N3, N, 0, false, false, Bitmap, Textura);
+
+		P1={-20,20,0}; P2={20,20,0}; P3={20,-20,0};
+		P1= cam.coordsvista(P1);
+		P2= cam.coordsvista(P2);
+		P3= cam.coordsvista(P3);
+		if ((P1.z<cam.d)||(P2.z<cam.d) ||(P3.z<cam.d)) {
+			ponto P;  bool quebra;
+			verifique_colisao_plano_de_vista(cam,&P1, &P2, &P3, &P, &quebra);
+			if (quebra)
+				cena.varredura(cam, 0,0,0,0,0,0,1,1, P, P3, P1, N2, N3, N1, N, 0, false,false, Bitmap, Textura);
+		}
+		cena.varredura(cam,  0,0,0,0,0,0,1,1, P1, P3, P2, N1, N2, N3, N, 0, false, false, Bitmap, Textura);
+		Bitmap->Canvas->Brush->Color=(TColor) RGB (0, 0, 0);
+
+		desenhe_planos_e_eixos(cam, Bitmap, false);
+    }
+
+	cena.carregue(Iamb, Iluz, Od, cam.coordsvista(Pluz), ka, kd, ks);
+
+	Nurbs.pinte(cena, cam, Form1->RadioGroup3->ItemIndex==1,Form1->CheckBox7->Checked, 1/(float)(StrToInt(Form1->Edit52->Text)), Bitmap,Textura);
+
+	if (Form1->CheckBox2->Checked){
+		float Zh= getFloat(Form1->Edit14->Text);
+		ponto P1={-20,20,Zh}, P2={-20,-20,Zh}, P3={20,-20,Zh};
+		vetor N1={0,0,1}, N2={0,0,1}, N3={0,0,1}, N={0,0,1};
+		N1=cam.coordsvista(N1);
+		N2=cam.coordsvista(N2);
+		N3=cam.coordsvista(N3);
+		N=cam.coordsvista(N);
+		N1.normalize();
+		N2.normalize();
+		N3.normalize();
+		N.normalize();
+		P1= cam.coordsvista(P1);
+		P2= cam.coordsvista(P2);
+		P3= cam.coordsvista(P3);
+		if ((P1.z<cam.d)||(P2.z<cam.d) ||(P3.z<cam.d)) {
+			ponto P;  bool quebra;
+			verifique_colisao_plano_de_vista(cam,&P1, &P2, &P3, &P, &quebra);
+			if (quebra)
+				cena.varredura(cam, 0,0,0,0,0,0,1,1, P, P3, P1, N2, N3, N1, N, 0.8, false, false, Bitmap, Textura);
+		}
+		cena.varredura(cam, 0,0,0,0,0,0,1,1, P1, P2, P3, N1, N2, N3, N, 0.8, false, false, Bitmap, Textura);
+		P1={-20,20,Zh}, P2={20,20,Zh}, P3={20,-20,Zh};
+		P1= cam.coordsvista(P1);
+		P2= cam.coordsvista(P2);
+		P3= cam.coordsvista(P3);
+		if ((P1.z<cam.d)||(P2.z<cam.d) ||(P3.z<cam.d)) {
+			ponto P;  bool quebra;
+			verifique_colisao_plano_de_vista(cam,&P1, &P2, &P3, &P, &quebra);
+			if (quebra)
+				cena.varredura(cam, 0,0,0,0,0,0,1,1, P, P3, P1, N2, N3, N1, N, 0.8, false, false,Bitmap, Textura);
+		}
+
+		cena.varredura(cam,0,0,0,0,0,0,1,1, P1, P3, P2, N1, N2, N3, N, 0.8, false,false, Bitmap, Textura);
+	}
+
+	Image1->Picture->Graphic = Bitmap;
+
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TForm1::FormClose(TObject *Sender, TCloseAction &Action)
+{
+	for(int i=0; i<=cam.largura; i++)
+		free(cam.zbuffer[i]);
+	free(cam.zbuffer);
+	cam.zbuffer=NULL;
+}
+//---------------------------------------------------------------------------
+
+
+
+void insere(ptlist *ptr, ptlist *pnovo)
+{
+	pnovo->ant=ptr;
+	pnovo->prox=ptr->prox;
+	ptr->prox=pnovo;
+	if (pnovo->prox!=NULL)
+		pnovo->prox->ant=pnovo;
+}
+
+void pinte_pt_inters(ponto p1, ponto p2, ptlist **Pini, bool *primvez, float Z)
+{
+	ponto ipt;
+	float maxdist= -1.0;
+
+
+	if (((p1.z<=Z)&&(p2.z>=Z)) || ((p1.z>=Z)&&(p2.z<=Z))){
+		if (fabs(p1.z-p2.z)<TOL) ipt=p1;
+		else {
+			double t=(Z - p1.z)/(p2.z - p1.z);
+			ipt = {(1-t)*p1.x + t*p2.x, (1-t)*p1.y + t*p2.y, Z};
+		}
+		if (*primvez) {
+			*primvez = false;
+			*Pini = (ptlist *)calloc(1,sizeof(ptlist));
+			(*Pini)->prox = (*Pini)->ant = NULL;
+			(*Pini)->P = ipt;
+			(*Pini)->t = 0;
+			(*Pini)->uval = 0.0;
+		}
+		else{
+			ptlist *pnovo,*apcor=(*Pini), *pmin=(*Pini);
+			float mindist=100000;
+			int ix=0;
+			while (apcor!=NULL){
+				if (ipt.dist(apcor->P)<mindist){
+					pmin=apcor;
+					mindist= ipt.dist(apcor->P);
+				}
+				apcor->t=(float)(ix++);
+				apcor=apcor->prox;
+			}
+			pnovo= (ptlist *)calloc(1,sizeof(ptlist));
+			pnovo->uval=0;
+			pnovo->P=ipt;
+			pnovo->t= -1;
+			float d1,d2,d3,d4;
+			if (pmin==(*Pini)){
+				if (pmin->prox==NULL)
+					insere(pmin,pnovo);
+				else{
+					d1=ipt.dist((*Pini)->P);
+					d2=pmin->prox->P.dist((*Pini)->P);
+					if (d1<=d2+PRECTOL) insere(pmin,pnovo);
+					else  insere(pmin->prox,pnovo);
+				}
+			}
+			else if (pmin->ant==(*Pini)){
+					d1=ipt.dist((*Pini)->P);
+					d2=pmin->P.dist((*Pini)->P);
+					if (pmin->prox==NULL)
+						if (d1<=d2+PRECTOL) insere(*Pini,pnovo);
+						else insere(pmin,pnovo);
+					else{
+						d3=pmin->prox->P.dist((*Pini)->P);
+						if (d1<=d2+PRECTOL) insere(*Pini,pnovo);
+						else if (d1<=d3+PRECTOL) insere(pmin,pnovo);
+							 else insere(pmin->prox,pnovo);
+					}
+			}
+			else {
+				ptlist *pbase=pmin->ant->ant;
+				d1=pbase->P.dist(ipt);
+				d2=pbase->P.dist(pbase->prox->P);
+				d3=pbase->P.dist(pmin->P);
+				if (pmin->prox==NULL)
+					if (d1<=d2+PRECTOL) insere(pbase,pnovo);
+					else if (d1<=d3+PRECTOL) insere(pbase->prox,pnovo);
+						else insere(pmin,pnovo);
+				else{
+					d4=pbase->P.dist(pmin->prox->P);
+					if (d1<=d2+PRECTOL) insere(pbase,pnovo);
+					else if (d1<=d3+PRECTOL) insere(pbase->prox,pnovo);
+						else if (d1<=d4+PRECTOL) insere(pmin,pnovo);
+							 else insere(pmin->prox,pnovo);
+				}
+
+            }
+
+		}
+
+		ipt=cam.coordsvista(ipt);
+		ipt=cam.perspectiva(ipt);
+		paratela(&ipt, Bitmap);
+		Bitmap->Canvas->Pen->Color= (TColor) RGB (0, 0, 0);
+		Bitmap->Canvas->Rectangle((int)(ipt.x-3),(int)(ipt.y-3), (int)(ipt.x+3),(int)(ipt.y+3));
+		Bitmap->Canvas->Pen->Color= (TColor) RGB (255, 0, 0);
+		Bitmap->Canvas->Rectangle((int)(ipt.x-2),(int)(ipt.y-2), (int)(ipt.x+2),(int)(ipt.y+2));
+	}
+
+}
+
+
+
+
+
+void __fastcall TForm1::Button24Click(TObject *Sender)
+{
+	if (SNurbs_criada) {
+		pegacamera();
+		double zmax=(-1000000), zmin=1000000,z;
+		for(int i=0; i<Nurbs.cu; i++)
+			for(int j=0; j<Nurbs.cv; j++){
+				z = Nurbs.d[i][j].z;
+				if (z>zmax) zmax = z;
+				if (z<zmin) zmin = z;
+			}
+		double h=zmin, deltah=getFloat(Form1->Edit54->Text);
+		int npts=0;
+		double Tempo=0.0,minH=100000,maxH=(-100000);
+		double tempo=0.0;
+
+		while (h<=zmax){
+			int nump=0;
+			tempo = Nurbs.desenhe_intersecoes_com_plano(&nump, h,Form1->RadioGroup1->ItemIndex,
+				getFloat(Form1->Edit15->Text),Form1->CheckBox3->Checked,cam,
+				Bitmap, 255, 255, 0);
+			npts += nump;
+			if (nump>0) {
+				Tempo += tempo;
+				if (h<minH) minH=h;
+				if (h>maxH) maxH=h;
+			}
+			h = h+deltah;
+		}
+		Edit57->Text = FloatToStr(Tempo);
+		Edit56->Text = IntToStr(npts);
+	    Edit62->Text = FloatToStr(npts/Tempo);
+		Edit63->Text = FloatToStr(minH);
+	    Edit64->Text = FloatToStr(maxH);
+		Image1->Picture->Graphic = Bitmap;
+
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button25Click(TObject *Sender)
+{
+	FILE *fp,*fpe;
+
+	OpenDialog1->Execute();
+	AnsiString astr= AnsiString(OpenDialog1->FileName);
+	AnsiString nomef;
+	AnsiString directory=ExtractFileDir(astr);
+	char nomel[30];
+	snurbs CNurbs;
+	bool Sloaded = false;
+
+	if (SNurbs_criada) {
+		CNurbs = Nurbs.clone();
+		Sloaded = true;
+	}
+
+
+	if(fp=fopen(astr.c_str(), "r"))
+	{
+		Luz_objeto cena;
+		vetor  Iamb, Iluz, Od;
+		ponto Pluz;
+		float  ka,  kd,  ks;
+		int npts=0;
+
+		pegacamera();
+
+		int  grauu,  grauv,  ku,  kv,  kur,  kvr;
+		double Tempo=0.0,minH=100000,maxH= -100000;
+
+		do {
+			fscanf(fp,"%s ", &nomel);
+			if (SNurbs_criada)
+				Nurbs.destrua();
+			nomef = directory + "\\"+ AnsiString(nomel);
+
+			fpe=fopen(AnsiString(nomef).c_str(), "r");
+
+			fscanf(fpe,"%d %d %d %d %d %d", &grauu,  &grauv,  &ku,  &kv,  &kur,  &kvr);
+			Nurbs.inicialize( grauu,  grauv,  ku,  kv,  kur,  kvr);
+
+			float u,v;
+			int r;
+			Ponto P;
+			for(int i=0; i<ku; i++){
+				fscanf(fpe,"%f %d", &u, &r);
+				Nurbs.Ucarregue(i, u, r);
+			}
+			for(int i=0; i<kv; i++){
+				fscanf(fpe,"%f %d", &v, &r);
+				Nurbs.Vcarregue(i, v, r);
+			}
+			for(int i=0; i<Nurbs.cu; i++)
+				for(int j=0; j<Nurbs.cv; j++){
+					fscanf(fpe,"%lf %lf %lf %lf", &(P.x), &(P.y), &(P.z), &(P.w));
+					P.x *= P.w; P.y *= P.w; P.z *= P.w;
+					Nurbs.Pcarregue(i, j, P);
+				}
+			Nurbs.defina_intervalos_uteis();
+			fclose(fpe);
+			SNurbs_criada=true;
+			Label15->Caption = OpenDialog1->FileName;
+			double zmax=(-1000000), zmin=1000000,z;
+			for(int i=0; i<Nurbs.cu; i++)
+				for(int j=0; j<Nurbs.cv; j++){
+					z = Nurbs.d[i][j].z;
+					if (z>zmax) zmax = z;
+					if (z<zmin) zmin = z;
+				}
+			double h=zmin, deltah=getFloat(Form1->Edit54->Text);
+			double tempo=0.0;
+			while (h<=zmax){
+				int numpt=0;
+				tempo = Nurbs.desenhe_intersecoes_com_plano(&numpt, h,Form1->RadioGroup1->ItemIndex,
+					getFloat(Form1->Edit15->Text),Form1->CheckBox3->Checked,cam,
+					Bitmap, 255, 255, 0);
+				npts += numpt;
+				if (numpt>0) {
+					Tempo += tempo;
+					if (h<minH) minH=h;
+					if (h>maxH) maxH=h;
+				}
+				h = h+deltah;
+			}
+	   } while (!feof(fp));
+	   fclose(fp);
+	   Edit57->Text = FloatToStr(Tempo);
+	   Edit56->Text = IntToStr(npts);
+	   Edit62->Text = FloatToStr(npts/Tempo);
+	   Edit63->Text = FloatToStr(minH);
+	   Edit64->Text = FloatToStr(maxH);
+	   Image1->Picture->Graphic = Bitmap;
+	}
+	if (Sloaded) {
+		Nurbs.destrua();
+		Nurbs = CNurbs.clone();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button26Click(TObject *Sender)
+{
+	FILE *fp,*fpe;
+
+	OpenDialog1->Execute();
+	AnsiString astr= AnsiString(OpenDialog1->FileName);
+	AnsiString nomef;
+	AnsiString directory=ExtractFileDir(astr);
+	char nomel[100];
+	snurbs CNurbs;
+	bool Sloaded = false;
+
+	if (SNurbs_criada) {
+		CNurbs = Nurbs.clone();
+		Sloaded = true;
+	}
+
+
+	if(fp=fopen(astr.c_str(), "r"))
+	{
+		Luz_objeto cena;
+		vetor  Iamb, Iluz, Od;
+		ponto Pluz;
+		float  ka,  kd,  ks;
+
+		pegacamera();
+		if(Form1->CheckBox8->Checked){
+			Bitmap->Canvas->Brush->Color=(TColor) RGB (0xff, 0xff, 0xff);
+			Bitmap->Canvas->Rectangle(0,0, Bitmap->Width,Bitmap->Height);
+		}
+		else
+			desenhe_planos_e_eixos(cam, Bitmap, true);
+
+		Iamb.x=StrToInt(Form1->Edit46->Text);
+		Iamb.y=StrToInt(Form1->Edit47->Text);
+		Iamb.z=StrToInt(Form1->Edit48->Text);
+
+		Iluz.x=StrToInt(Form1->Edit37->Text);
+		Iluz.y=StrToInt(Form1->Edit38->Text);
+		Iluz.z=StrToInt(Form1->Edit39->Text);
+
+		Od.x=StrToInt(Form1->Edit43->Text);
+		Od.y=StrToInt(Form1->Edit44->Text);
+		Od.z=StrToInt(Form1->Edit45->Text);
+
+		Pluz.x=getFloat(Form1->Edit40->Text);
+		Pluz.y=getFloat(Form1->Edit41->Text);
+		Pluz.z=getFloat(Form1->Edit42->Text);
+
+		ka=getFloat(Form1->Edit49->Text);
+		kd=getFloat(Form1->Edit50->Text);
+		ks=getFloat(Form1->Edit51->Text);
+
+		cam.inicialize_zbuffer();
+
+		vetor Odp={175,175,175};
+		cena.carregue(Iamb, Iluz, Odp, cam.coordsvista(Pluz), ka, kd, ks);
+
+		if (!CheckBox8->Checked) {
+			ponto P1={-20,20,0}, P2={-20,-20,0}, P3={20,-20,0};
+			vetor N1={0,0,1}, N2={0,0,1}, N3={0,0,1}, N={0,0,1};
+			P1= cam.coordsvista(P1);
+			P2= cam.coordsvista(P2);
+			P3= cam.coordsvista(P3);
+			N1=cam.coordsvista(N1);
+			N2=cam.coordsvista(N2);
+			N3=cam.coordsvista(N3);
+			N=cam.coordsvista(N);
+			N1.normalize();
+			N2.normalize();
+			N3.normalize();
+			N.normalize();
+			if ((P1.z<cam.d)||(P2.z<cam.d) ||(P3.z<cam.d)) {
+				ponto P;  bool quebra;
+				verifique_colisao_plano_de_vista(cam,&P1, &P2, &P3, &P, &quebra);
+				if (quebra)
+					cena.varredura(cam, 0,0,0,0,0,0,1,1, P, P3, P1, N2, N3, N1, N, 0, false,false, Bitmap, Textura);
+			}
+
+			cena.varredura(cam, 0,0,0,0,0,0,1,1, P1, P2, P3, N1, N2, N3, N, 0, false,false, Bitmap, Textura);
+
+			P1={-20,20,0}; P2={20,20,0}; P3={20,-20,0};
+			P1= cam.coordsvista(P1);
+			P2= cam.coordsvista(P2);
+			P3= cam.coordsvista(P3);
+			if ((P1.z<cam.d)||(P2.z<cam.d) ||(P3.z<cam.d)) {
+				ponto P;  bool quebra;
+				verifique_colisao_plano_de_vista(cam,&P1, &P2, &P3, &P, &quebra);
+				if (quebra)
+					cena.varredura(cam, 0,0,0,0,0,0,1,1, P, P3, P1, N2, N3, N1, N, 0, false,false, Bitmap, Textura);
+			}
+			cena.varredura(cam,  0,0,0,0,0,0,1,1, P1, P3, P2, N1, N2, N3, N, 0, false,false, Bitmap, Textura);
+			Bitmap->Canvas->Brush->Color=(TColor) RGB (0, 0, 0);
+			//	Bitmap->Canvas->Rectangle(0,0, Bitmap->Width,Bitmap->Height);
+			desenhe_planos_e_eixos(cam, Bitmap, false);
+		}
+
+		int  grauu,  grauv,  ku,  kv,  kur,  kvr;
+
+		do {
+			fscanf(fp,"%s ", &nomel);
+			if (SNurbs_criada)
+				Nurbs.destrua();
+			nomef = directory +"\\"+ AnsiString(nomel);
+
+			fpe=fopen(AnsiString(nomef).c_str(), "r");
+
+			fscanf(fpe,"%d %d %d %d %d %d", &grauu,  &grauv,  &ku,  &kv,  &kur,  &kvr);
+			Nurbs.inicialize( grauu,  grauv,  ku,  kv,  kur,  kvr);
+
+			float u,v;
+			int r;
+			Ponto P;
+			for(int i=0; i<ku; i++){
+				fscanf(fpe,"%f %d", &u, &r);
+				Nurbs.Ucarregue(i, u, r);
+			}
+			for(int i=0; i<kv; i++){
+				fscanf(fpe,"%f %d", &v, &r);
+				Nurbs.Vcarregue(i, v, r);
+			}
+			for(int i=0; i<Nurbs.cu; i++)
+				for(int j=0; j<Nurbs.cv; j++){
+					fscanf(fpe,"%lf %lf %lf %lf", &(P.x), &(P.y), &(P.z), &(P.w));
+					P.x *= P.w; P.y *= P.w; P.z *= P.w;
+					Nurbs.Pcarregue(i, j, P);
+				}
+			Nurbs.defina_intervalos_uteis();
+			fclose(fpe);
+			SNurbs_criada=true;
+			Label15->Caption = OpenDialog1->FileName;
+
+
+			Nurbs.pinte(cena, cam, Form1->RadioGroup3->ItemIndex==1, Form1->CheckBox7->Checked, 1/(float)(StrToInt(Form1->Edit52->Text)), Bitmap,Textura);
+
+			if (Form1->CheckBox2->Checked){
+				float Zh= getFloat(Form1->Edit14->Text);
+				ponto P1={-20,20,Zh}, P2={-20,-20,Zh}, P3={20,-20,Zh};
+				vetor N1={0,0,1}, N2={0,0,1}, N3={0,0,1}, N={0,0,1};
+				N1=cam.coordsvista(N1);
+				N2=cam.coordsvista(N2);
+				N3=cam.coordsvista(N3);
+				N=cam.coordsvista(N);
+				N1.normalize();
+				N2.normalize();
+				N3.normalize();
+				N.normalize();
+				P1= cam.coordsvista(P1);
+				P2= cam.coordsvista(P2);
+				P3= cam.coordsvista(P3);
+				if ((P1.z<cam.d)||(P2.z<cam.d) ||(P3.z<cam.d)) {
+					ponto P;  bool quebra;
+					verifique_colisao_plano_de_vista(cam,&P1, &P2, &P3, &P, &quebra);
+					if (quebra)
+						cena.varredura(cam, 0,0,0,0,0,0,1,1, P, P3, P1, N2, N3, N1, N, 0.8, false,false, Bitmap, Textura);
+				}
+				cena.varredura(cam, 0,0,0,0,0,0,1,1, P1, P2, P3, N1, N2, N3, N, 0.8, false, false, Bitmap, Textura);
+				P1={-20,20,Zh}, P2={20,20,Zh}, P3={20,-20,Zh};
+				P1= cam.coordsvista(P1);
+				P2= cam.coordsvista(P2);
+				P3= cam.coordsvista(P3);
+				if ((P1.z<cam.d)||(P2.z<cam.d) ||(P3.z<cam.d)) {
+					ponto P;  bool quebra;
+					verifique_colisao_plano_de_vista(cam,&P1, &P2, &P3, &P, &quebra);
+					if (quebra)
+						cena.varredura(cam, 0,0,0,0,0,0,1,1, P, P3, P1, N2, N3, N1, N, 0.8, false, false, Bitmap, Textura);
+				}
+
+				cena.varredura(cam,0,0,0,0,0,0,1,1, P1, P3, P2, N1, N2, N3, N, 0.8, false,false, Bitmap, Textura);
+			}
+	   } while (!feof(fp));
+	   fclose(fp);
+	   Image1->Picture->Graphic = Bitmap;
+	}
+
+	if (Sloaded) {
+		Nurbs.destrua();
+		Nurbs = CNurbs.clone();
+	}
+
+}
+//---------------------------------------------------------------------------
+
+
+
+
+void __fastcall TForm1::Button9Click(TObject *Sender)
+{
+	FILE *fp,*fpe;
+
+	OpenDialog1->Execute();
+	AnsiString astr= AnsiString(OpenDialog1->FileName);
+	AnsiString nomef;
+	AnsiString directory=ExtractFileDir(astr);
+	char nomel[100];
+	snurbs CNurbs;
+	bool Sloaded = false;
+
+	if (SNurbs_criada) {
+		CNurbs = Nurbs.clone();
+		Sloaded = true;
+	}
+
+
+	if(fp=fopen(astr.c_str(), "r"))
+	{
+		int  grauu,  grauv,  ku,  kv,  kur,  kvr;
+
+		do {
+			fscanf(fp,"%s ", &nomel);
+			if (SNurbs_criada)
+				Nurbs.destrua();
+			nomef = directory +"\\"+ AnsiString(nomel);
+
+			fpe=fopen(AnsiString(nomef).c_str(), "r");
+
+			fscanf(fpe,"%d %d %d %d %d %d", &grauu,  &grauv,  &ku,  &kv,  &kur,  &kvr);
+			Nurbs.inicialize( grauu,  grauv,  ku,  kv,  kur,  kvr);
+
+			float u,v;
+			int r;
+			Ponto P;
+			for(int i=0; i<ku; i++){
+				fscanf(fpe,"%f %d", &u, &r);
+				Nurbs.Ucarregue(i, u, r);
+			}
+			for(int i=0; i<kv; i++){
+				fscanf(fpe,"%f %d", &v, &r);
+				Nurbs.Vcarregue(i, v, r);
+			}
+			for(int i=0; i<Nurbs.cu; i++)
+				for(int j=0; j<Nurbs.cv; j++){
+					fscanf(fpe,"%lf %lf %lf %lf", &(P.x), &(P.y), &(P.z), &(P.w));
+					P.x *= P.w; P.y *= P.w; P.z *= P.w;
+					Nurbs.Pcarregue(i, j, P);
+				}
+			Nurbs.defina_intervalos_uteis();
+			fclose(fpe);
+			SNurbs_criada=true;
+			Nurbs.desenheisoparametricas(cam, Bitmap, 0.1, 10, 180, 20);
+			Form1->Image1->Picture->Graphic = Bitmap; // assign the bitmap to the image control
+		} while (!feof(fp));
+	   fclose(fp);
+	   Image1->Picture->Graphic = Bitmap;
+	}
+
+	if (Sloaded) {
+		Nurbs.destrua();
+		Nurbs = CNurbs.clone();
+	}
+}
+//---------------------------------------------------------------------------
+

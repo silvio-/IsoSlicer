@@ -15,16 +15,18 @@ IsoSlicer-1.0.cbproj
 or start the C++Builder IDE and go to File->Open Project (Ctrl F11), and select this file in the chosen directory. You then press Run button, or Ctrl+Shift+F9.
 To see the source codes, you go to View->Units (Ctrl+F12).
 
-When runnning, you need to make a few selections to get what Figure1.jpg shows:
+When runnning, you need to make a few selections to get what Figure1.jpg and Figure2.jpg show (they correspond to Figure 17 of the article):
 
 *1.Load a texture image:*  
-Select "Camera" Tab. Figure2.jpg shows the selected "Camera" tab. You can pick "Phong Shading with Texture". Then you load the texture from the "textures" directory (a bmp file) inside the "dataset" directory. Choose "Trimmed-CInfo.bmp"
+Select "Camera" Tab. Figure0.jpg shows the selected "Camera" tab. You can pick "Phong Shading with Texture". Then you load the texture from the "textures" directory (a bmp file) inside the "dataset" directory. Choose "Trimmed-white-marble.bmp"
 
 *2.Render the Utah Teapot:*  
 Figure1.jpg shows the options in the "NURBS" tab. In the "Slicing" area select "zbuffer"  and "Trim"  and press the button "Multiple NURBS" in the "Rendering NURBS" area. In the "multiple_patches" directory (inside "dataset") select the file "UtahTeapot.txt".
 
 *3.Present the slicing samples over the rendered image:*   
-In the slicing area, press the button "Multiple NURBS-Multilayer" and select nn the "multiple_patches" directory the same file "UtahTeapot.txt".
+In the slicing area, press the button "Multiple NURBS-Multilayer" and select in the "multiple_patches" directory the same file "UtahTeapot.txt" to get what Figure1.jpg shows.
+
+*Obs:* To get what Figure2.jpg shows, in the "Slicing" area modify the epsilon field to '0.005' and the delta field to '0.05', and repeat steps 1,2 and 3.
 
 That's it! You can watch a video showing these steps:
 https://drive.google.com/file/d/1kBLubybHPWZZzQWmrktu5UvKsmGgn4p9/view?userstoinvite=none

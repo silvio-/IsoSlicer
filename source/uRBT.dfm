@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'IsoSlicer'
-  ClientHeight = 680
+  ClientHeight = 816
   ClientWidth = 1360
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -64,7 +64,7 @@ object Form1: TForm1
     Top = 8
     Width = 336
     Height = 593
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -12

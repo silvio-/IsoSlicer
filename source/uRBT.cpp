@@ -25,8 +25,8 @@
 TForm1 *Form1;
 Graphics::TBitmap *Bitmap, *Textura;
 bool Txtcriada=false;
-//camera cam(1250, 800);
-camera cam(1000, 640);
+camera cam(1250, 800);
+//camera cam(1000, 640);
 
 double getFloat(AnsiString fstr)
 {
@@ -69,9 +69,9 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 {
 	Bitmap = new Graphics::TBitmap();
 	// create the bitmap object
-	Bitmap->Width =  1000;//Form1->Image1->Width; // assign the initial width...
-	Bitmap->Height = 640;//Form1->Image1->Height; // ...and the initial height
-	Bitmap->Canvas->Brush->Color=(TColor) RGB (0xff, 0xff, 0xff);
+	Bitmap->Width =  1250;//Form1->Image1->Width; // assign the initial width...
+	Bitmap->Height = 800;//Form1->Image1->Height; // ...and the initial height
+	Bitmap->Canvas->Brush->Color=(TColor) RGB (0, 0, 0);
 	Bitmap->Canvas->Rectangle(0,0, Bitmap->Width,Bitmap->Height);
 	Form1->Image1->Picture->Graphic = Bitmap; // assign the bitmap to the image control
 	setlocale(LC_ALL, "en_US");
@@ -146,8 +146,11 @@ void __fastcall TForm1::Button2Click(TObject *Sender)
 		double minZ, maxZ;
 
 		Nurbs.encontre_min_max_Z_malha(&minZ, &maxZ);
-		Label3->Caption = "MinZ=" + FloatToStrF(minZ,ffFixed, 3,2);
-		Label4->Caption = "MaxZ=" + FloatToStrF(maxZ,ffFixed, 3,2);
+		TFormatSettings fmt = TFormatSettings::Create();
+		fmt.DecimalSeparator = _D('.'); // Set custom decimal separator
+
+		Label3->Caption = "MinZ=" + FloatToStrF(minZ,ffFixed, 3,2,fmt);
+		Label4->Caption = "MaxZ=" + FloatToStrF(maxZ,ffFixed, 3,2,fmt);
 		SNurbs_criada=true;
 
 		Label7->Caption = OpenDialog1->FileName;
@@ -273,7 +276,7 @@ void __fastcall TForm1::Button21Click(TObject *Sender)
 	float  ka,  kd,  ks;
 
 	if(!Form1->CheckBox4->Checked){
-		Bitmap->Canvas->Brush->Color=(TColor) RGB (0xff, 0xff, 0xff);
+		Bitmap->Canvas->Brush->Color=(TColor) RGB (0, 0, 0);
 		Bitmap->Canvas->Rectangle(0,0, Bitmap->Width,Bitmap->Height);
 	}
 
@@ -533,11 +536,13 @@ void __fastcall TForm1::Button24Click(TObject *Sender)
 			}
 			h = h+deltah;
 		}
-		Edit57->Text = FloatToStr(Tempo);
+		TFormatSettings fmt = TFormatSettings::Create();
+		fmt.DecimalSeparator = _D('.'); // Set custom decimal separator
+		Edit57->Text = FloatToStr(Tempo,fmt);
 		Edit56->Text = IntToStr(npts);
-	    Edit62->Text = FloatToStr(npts/Tempo);
-		Edit63->Text = FloatToStr(minH);
-	    Edit64->Text = FloatToStr(maxH);
+		Edit62->Text = FloatToStr(npts/Tempo,fmt);
+		Edit63->Text = FloatToStr(minH,fmt);
+		Edit64->Text = FloatToStr(maxH,fmt);
 		Image1->Picture->Graphic = Bitmap;
 
 	}
@@ -631,11 +636,13 @@ void __fastcall TForm1::Button25Click(TObject *Sender)
 			}
 	   } while (!feof(fp));
 	   fclose(fp);
-	   Edit57->Text = FloatToStr(Tempo);
+	   TFormatSettings fmt = TFormatSettings::Create();
+	   fmt.DecimalSeparator = _D('.'); // Set custom decimal separator
+	   Edit57->Text = FloatToStr(Tempo,fmt);
 	   Edit56->Text = IntToStr(npts);
-	   Edit62->Text = FloatToStr(npts/Tempo);
-	   Edit63->Text = FloatToStr(minH);
-	   Edit64->Text = FloatToStr(maxH);
+	   Edit62->Text = FloatToStr(npts/Tempo,fmt);
+	   Edit63->Text = FloatToStr(minH,fmt);
+	   Edit64->Text = FloatToStr(maxH,fmt);
 	   Image1->Picture->Graphic = Bitmap;
 	}
 	if (Sloaded) {
@@ -672,7 +679,7 @@ void __fastcall TForm1::Button26Click(TObject *Sender)
 
 		pegacamera();
 		if(Form1->CheckBox8->Checked){
-			Bitmap->Canvas->Brush->Color=(TColor) RGB (0xff, 0xff, 0xff);
+			Bitmap->Canvas->Brush->Color=(TColor) RGB (0, 0, 0);
 			Bitmap->Canvas->Rectangle(0,0, Bitmap->Width,Bitmap->Height);
 		}
 		else
