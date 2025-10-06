@@ -21,10 +21,10 @@ When runnning, you need to make a few selections to get what Figure1.jpg and Fig
 Select "Camera" Tab. Figure0.jpg shows the selected "Camera" tab. You can pick "Phong Shading with Texture". Then you load the texture from the "textures" directory (a bmp file) inside the "dataset" directory. Choose "Trimmed-white-marble.bmp"
 
 *2.Render the Utah Teapot:*  
-Figure1.jpg shows the options in the "NURBS" tab. In the "Slicing" area select "zbuffer"  and "Trim"  and press the button "Multiple NURBS" in the "Rendering NURBS" area. In the "multiple_patches" directory (inside "dataset") select the file "UtahTeapot.txt".
+Figure1.jpg shows the options in the "NURBS" tab. In the "Slicing" area select "zbuffer"  and "Trim"  and press the button "Multiple NURBS" in the "Rendering NURBS" area. In the "multiple_patches" directory (inside "dataset") select the file "Multiple-UtahTeapot.txt".
 
 *3.Present the slicing samples over the rendered image:*   
-In the slicing area, press the button "Multiple NURBS-Multilayer" and select in the "multiple_patches" directory the same file "UtahTeapot.txt" to get what Figure1.jpg shows.
+In the slicing area, press the button "Multiple NURBS-Multilayer" and select in the "multiple_patches" directory the same file "Multiple-UtahTeapot.txt" to get what Figure1.jpg shows.
 
 *Obs:* To get what Figure2.jpg shows, in the "Slicing" area modify the epsilon field to '0.005' and the delta field to '0.05', and repeat steps 1,2 and 3.
 
